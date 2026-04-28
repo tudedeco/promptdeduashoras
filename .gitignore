@@ -1,0 +1,13 @@
+.claude/
+.venv/
+__pycache__/
+*.pyc
+data/state.db
+data/state.db-*
+data/chrome-profile/
+data/chrome-profile-*/
+data/_probe/
+data/results_*.xlsx
+data/~$results_*.xlsx
+_probe_spinner.py
+.DS_Store
