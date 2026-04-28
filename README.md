@@ -1,5 +1,11 @@
 # Google Maps Brazil Scraper
 
+
+PRA USAR VC BASICAMENTE TEM Q INSTALAR OS REQUIREMENTS, TO USANDO O PYTHON 3.12 se n ir ai e isso
+
+AI VC FAZ O python scrape.py --query "intelbras" --instances X (NUMERO DE BROWSERS ABERTOS) --headless (se vc n quiser ver os browsers abertos vc bota esse headless ai)
+
+
 Uso basico:
 
 ```powershell
@@ -44,7 +50,7 @@ Continuar uma busca interrompida:
 uv run python scrape.py --query "camarao" --resume
 ```
 
-Testar em uma area menor:
+Testar em uma area menor (ESSA PORRA DA FALHANDO MAS VSF):
 
 ```powershell
 uv run python scrape.py --query "camarao" --bbox="-23.70,-46.80,-23.45,-46.50" --start-cell-km=30 --headless --no-dashboard
@@ -75,4 +81,3 @@ Flags principais:
 - `--no-dashboard`: nao sobe o dashboard local.
 - `--port`: porta do dashboard.
 
-Aviso rapido: isso raspa o Google Maps pelo navegador, sem API oficial. Pode quebrar se o Google mudar a pagina, e pode violar os termos deles. Use por sua conta.
