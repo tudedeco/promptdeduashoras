@@ -1,4 +1,4 @@
-# Google Maps Brazil Scraper
+# PUXA DADO GOOGLE MAPS
 
 
 PRA USAR VC BASICAMENTE TEM Q INSTALAR OS REQUIREMENTS, TO USANDO O PYTHON 3.12, dps dos requirements da playwright install chromium
