@@ -1,24 +1,12 @@
 # Google Maps Brazil Scraper
 
 
-PRA USAR VC BASICAMENTE TEM Q INSTALAR OS REQUIREMENTS, TO USANDO O PYTHON 3.12 se n ir no seu ve a versao
+PRA USAR VC BASICAMENTE TEM Q INSTALAR OS REQUIREMENTS, TO USANDO O PYTHON 3.12, dps dos requirements da playwright install chromium
 
 AI VC FAZ O python scrape.py --query "intelbras" --instances X (NUMERO DE BROWSERS ABERTOS) --headless (se vc n quiser ver os browsers abertos vc bota esse headless ai)
 
 
 Uso basico:
-
-```powershell
-uv run python scrape.py --query "camarao"
-```
-
-Instalacao:
-
-```powershell
-uv venv
-uv pip install -r requirements.txt
-uv run playwright install chromium
-```
 
 Rodar sem abrir navegador visivel:
 
