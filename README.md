@@ -6,6 +6,8 @@ PRA USAR VC BASICAMENTE TEM Q INSTALAR OS REQUIREMENTS, TO USANDO O PYTHON 3.12,
 AI VC FAZ O python scrape.py --query "intelbras" --instances X (NUMERO DE BROWSERS ABERTOS) --headless (se vc n quiser ver os browsers abertos vc bota esse headless ai)
 
 (IA FEZ A PARTE GAYZINHA AI DO README, ENTAO IGNORA O "UV" SE VC N USAR UV CERTO, ELA FEZ ISSO PQ EU TAVA USANDO
+
+( pra resetar a query bota --reset no final do input :) )
 Uso basico:
 
 Rodar sem abrir navegador visivel:
