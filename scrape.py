@@ -37,7 +37,7 @@ STATE_DB = DATA_DIR / "state.db"
 PROFILE_DIR = DATA_DIR / "chrome-profile"
 DENSE_SUBDIVIDE_THRESHOLD = 60
 MIN_SUBDIVIDE_RESULTS = 1
-
+#gatota
 BRAZIL_GEOJSON_URLS = [
     "https://raw.githubusercontent.com/mledoze/countries/master/data/bra.geo.json",
     "https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson",
