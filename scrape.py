@@ -36,7 +36,7 @@ GEOJSON_PATH = DATA_DIR / "brazil.geojson"
 STATE_DB = DATA_DIR / "state.db"
 PROFILE_DIR = DATA_DIR / "chrome-profile"
 DENSE_SUBDIVIDE_THRESHOLD = 60
-MIN_SUBDIVIDE_RESULTS = 27
+MIN_SUBDIVIDE_RESULTS = 1
 
 BRAZIL_GEOJSON_URLS = [
     "https://raw.githubusercontent.com/mledoze/countries/master/data/bra.geo.json",
@@ -193,29 +193,36 @@ async def scrape_worker(
                 outside_count = len(records) - len(in_cell)
                 in_count = len(in_cell)
                 new_rows = store.upsert_places(records, cell.cell_id)
+                known_in_count = store.count_places_in_cell(cell)
+                subdivision_count = max(in_count, known_in_count)
                 dense_subdivide = in_count > DENSE_SUBDIVIDE_THRESHOLD
-                subdivide_requested = in_count >= MIN_SUBDIVIDE_RESULTS and (should_subdivide or dense_subdivide)
+                subdivide_requested = subdivision_count >= MIN_SUBDIVIDE_RESULTS
 
                 if subdivide_requested:
                     children = subdivide(cell, min_km=min_km)
                     if children:
                         store.seed_cells(children)
-                        store.mark_cell_subdivided(cell.cell_id, in_count, hit_cap=should_subdivide)
+                        store.mark_cell_subdivided(cell.cell_id, subdivision_count, hit_cap=should_subdivide)
                         child_km = children[0].size_km
-                        reason = "scroll cap/loading" if should_subdivide else f">{DENSE_SUBDIVIDE_THRESHOLD} places"
-                        print(f"  [{worker}] -> {in_count} in-cell results ({outside_count} outside saved), subdivided into 4 ~{child_km:.2f}km ({reason}, new places: {new_rows})")
+                        if should_subdivide:
+                            reason = "scroll cap/loading"
+                        elif dense_subdivide:
+                            reason = f">{DENSE_SUBDIVIDE_THRESHOLD} current in-cell places"
+                        else:
+                            reason = f">={MIN_SUBDIVIDE_RESULTS} known in-cell place"
+                        print(f"  [{worker}] -> {in_count} current / {known_in_count} known in-cell results ({outside_count} outside saved), subdivided into 4 ~{child_km:.2f}km ({reason}, new places: {new_rows})")
                     else:
-                        store.mark_cell_done(cell.cell_id, in_count, should_subdivide)
-                        print(f"  [{worker}] -> {in_count} in-cell results ({outside_count} outside saved), subdivision requested but at floor {min_km}km, stopping (new places: {new_rows})")
+                        store.mark_cell_done(cell.cell_id, subdivision_count, should_subdivide)
+                        print(f"  [{worker}] -> {in_count} current / {known_in_count} known in-cell results ({outside_count} outside saved), subdivision requested but at floor {min_km}km, stopping (new places: {new_rows})")
                 else:
-                    hit_cap = should_subdivide and in_count >= MIN_SUBDIVIDE_RESULTS
-                    store.mark_cell_done(cell.cell_id, in_count, hit_cap)
+                    hit_cap = should_subdivide and subdivision_count >= MIN_SUBDIVIDE_RESULTS
+                    store.mark_cell_done(cell.cell_id, subdivision_count, hit_cap)
                     note = (
                         f", skipped subdivision because fewer than {MIN_SUBDIVIDE_RESULTS} in-cell results"
-                        if should_subdivide and in_count < MIN_SUBDIVIDE_RESULTS
+                        if should_subdivide and subdivision_count < MIN_SUBDIVIDE_RESULTS
                         else ""
                     )
-                    print(f"  [{worker}] -> {in_count} in-cell results ({outside_count} outside saved){note} (new places: {new_rows})")
+                    print(f"  [{worker}] -> {in_count} current / {known_in_count} known in-cell results ({outside_count} outside saved){note} (new places: {new_rows})")
                 await human_delay(1500, 3500)
             except Exception as e:
                 print(f"  [{worker}] !! error: {e}")

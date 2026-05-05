@@ -237,6 +237,19 @@ class Store:
             ).fetchall()
         return {status: count for status, count in rows}
 
+    def count_places_in_cell(self, cell: Cell) -> int:
+        with self._lock:
+            return self._conn.execute(
+                """SELECT COUNT(*)
+                   FROM places
+                   WHERE query=?
+                     AND lat IS NOT NULL
+                     AND lon IS NOT NULL
+                     AND lat BETWEEN ? AND ?
+                     AND lon BETWEEN ? AND ?""",
+                (self.query, cell.min_lat, cell.max_lat, cell.min_lon, cell.max_lon),
+            ).fetchone()[0]
+
     def upsert_places(self, places: list[PlaceRecord], cell_id: str) -> int:
         """Insert new places; return count of newly inserted rows."""
         inserted = 0
