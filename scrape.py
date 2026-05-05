@@ -36,6 +36,7 @@ GEOJSON_PATH = DATA_DIR / "brazil.geojson"
 STATE_DB = DATA_DIR / "state.db"
 PROFILE_DIR = DATA_DIR / "chrome-profile"
 DENSE_SUBDIVIDE_THRESHOLD = 60
+MIN_SUBDIVIDE_RESULTS = 27
 
 BRAZIL_GEOJSON_URLS = [
     "https://raw.githubusercontent.com/mledoze/countries/master/data/bra.geo.json",
@@ -176,11 +177,11 @@ async def scrape_worker(
                     if r.lat is not None and r.lon is not None
                     and cell.contains_point(r.lat, r.lon)
                 ]
-                dropped = len(records) - len(in_cell)
+                outside_count = len(records) - len(in_cell)
                 in_count = len(in_cell)
-                new_rows = store.upsert_places(in_cell, cell.cell_id)
+                new_rows = store.upsert_places(records, cell.cell_id)
                 dense_subdivide = in_count > DENSE_SUBDIVIDE_THRESHOLD
-                subdivide_requested = in_count > 0 and (should_subdivide or dense_subdivide)
+                subdivide_requested = in_count >= MIN_SUBDIVIDE_RESULTS and (should_subdivide or dense_subdivide)
 
                 if subdivide_requested:
                     children = subdivide(cell, min_km=min_km)
@@ -189,15 +190,19 @@ async def scrape_worker(
                         store.mark_cell_subdivided(cell.cell_id, in_count, hit_cap=should_subdivide)
                         child_km = children[0].size_km
                         reason = "scroll cap/loading" if should_subdivide else f">{DENSE_SUBDIVIDE_THRESHOLD} places"
-                        print(f"  [{worker}] -> {in_count} in-cell results (dropped {dropped} outside), subdivided into 4 ~{child_km:.2f}km ({reason}, new places: {new_rows})")
+                        print(f"  [{worker}] -> {in_count} in-cell results ({outside_count} outside saved), subdivided into 4 ~{child_km:.2f}km ({reason}, new places: {new_rows})")
                     else:
                         store.mark_cell_done(cell.cell_id, in_count, should_subdivide)
-                        print(f"  [{worker}] -> {in_count} in-cell results (dropped {dropped} outside), subdivision requested but at floor {min_km}km, stopping (new places: {new_rows})")
+                        print(f"  [{worker}] -> {in_count} in-cell results ({outside_count} outside saved), subdivision requested but at floor {min_km}km, stopping (new places: {new_rows})")
                 else:
-                    hit_cap = should_subdivide and in_count > 0
+                    hit_cap = should_subdivide and in_count >= MIN_SUBDIVIDE_RESULTS
                     store.mark_cell_done(cell.cell_id, in_count, hit_cap)
-                    note = ", skipped subdivision because no in-cell results" if should_subdivide and in_count == 0 else ""
-                    print(f"  [{worker}] -> {in_count} in-cell results (dropped {dropped} outside){note} (new places: {new_rows})")
+                    note = (
+                        f", skipped subdivision because fewer than {MIN_SUBDIVIDE_RESULTS} in-cell results"
+                        if should_subdivide and in_count < MIN_SUBDIVIDE_RESULTS
+                        else ""
+                    )
+                    print(f"  [{worker}] -> {in_count} in-cell results ({outside_count} outside saved){note} (new places: {new_rows})")
                 await human_delay(1500, 3500)
             except Exception as e:
                 print(f"  [{worker}] !! error: {e}")
