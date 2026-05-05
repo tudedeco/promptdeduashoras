@@ -1,24 +1,16 @@
-# Google Maps Brazil Scraper
+# PUXA DADO DO FOOGLE LAPS
 
 
-PRA USAR VC BASICAMENTE TEM Q INSTALAR OS REQUIREMENTS, TO USANDO O PYTHON 3.12 se n ir ai e isso
+PRA USAR VC BASICAMENTE TEM Q INSTALAR OS REQUIREMENTS, TO USANDO O PYTHON 3.12, dps dos requirements da playwright install chromium
 
 AI VC FAZ O python scrape.py --query "intelbras" --instances X (NUMERO DE BROWSERS ABERTOS) --headless (se vc n quiser ver os browsers abertos vc bota esse headless ai)
 
+(IA FEZ A PARTE GAYZINHA AI DO README, ENTAO IGNORA O "UV" SE VC N USAR UV CERTO, ELA FEZ ISSO PQ EU TAVA USANDO
+
+(               pra resetar a query bota --reset no final do input :-]          )
+
 
 Uso basico:
-
-```powershell
-uv run python scrape.py --query "camarao"
-```
-
-Instalacao:
-
-```powershell
-uv venv
-uv pip install -r requirements.txt
-uv run playwright install chromium
-```
 
 Rodar sem abrir navegador visivel:
 
@@ -53,13 +45,13 @@ uv run python scrape.py --query "camarao" --resume
 Testar em uma area menor (ESSA PORRA DA FALHANDO MAS VSF):
 
 ```powershell
-uv run python scrape.py --query "camarao" --bbox="-23.70,-46.80,-23.45,-46.50" --start-cell-km=30 --headless --no-dashboard
+ python scrape.py --query "camarao" --bbox="-23.70,-46.80,-23.45,-46.50" --start-cell-km=30 --headless --no-dashboard
 ```
 
 Mudar a porta do dashboard:
 
 ```powershell
-uv run python scrape.py --query "camarao" --port 5001
+ run python scrape.py --query "camarao" --port 5001
 ```
 
 Arquivos gerados:
@@ -80,4 +72,6 @@ Flags principais:
 - `--headless`: roda o navegador sem janela.
 - `--no-dashboard`: nao sobe o dashboard local.
 - `--port`: porta do dashboard.
+
+jxox
 

@@ -116,11 +116,24 @@ def _profile_dir_for_instance(instance_id: int, instances: int) -> Path:
     return DATA_DIR / f"chrome-profile-{instance_id}"
 
 
-async def scrape_loop(store: Store, headless: bool, start_km: float, min_km: float, instances: int) -> None:
+async def scrape_loop(
+    store: Store,
+    headless: bool,
+    start_km: float,
+    min_km: float,
+    instances: int,
+) -> None:
     active_cells: set[str] = set()
     tasks = [
         asyncio.create_task(
-            scrape_worker(store, headless, min_km, instance_id=i, instances=instances, active_cells=active_cells)
+            scrape_worker(
+                store,
+                headless,
+                min_km,
+                instance_id=i,
+                instances=instances,
+                active_cells=active_cells,
+            )
         )
         for i in range(1, instances + 1)
     ]

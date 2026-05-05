@@ -187,7 +187,7 @@ class Store:
                        SELECT cell_id
                        FROM cells
                        WHERE query=? AND status='pending'
-                       ORDER BY min_lat ASC, min_lon ASC, (max_lat - min_lat) DESC, cell_id ASC
+                       ORDER BY max_lat DESC, min_lon ASC, (max_lat - min_lat) DESC, cell_id ASC
                        LIMIT 1
                      )
                    RETURNING cell_id, parent_id, min_lat, min_lon, max_lat, max_lon""",
